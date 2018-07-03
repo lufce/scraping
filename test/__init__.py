@@ -10,7 +10,7 @@ def webTest():
     print(req.text)
 
 def environTest():
-    url = 'http://jws.jalan.net/APIAdvance/HotelSearch/V1/?key={}&s_area=162612&count=2&xml_ptn=3' \
+    url = 'http://jws.jalan.net/APIAdvance/HotelSearch/V1/?key={}&s_area=162612&count=2&xml_ptn=1' \
         .format(os.environ['JALAN_KEY'])
     print(url)
     req = webs.get(url)
@@ -39,5 +39,8 @@ def xmlTest():
             output.close()
             num = num+1
 
+def getRatingFromHotelDetailURL():
+    #設計を考えて
+
 if __name__ == '__main__':
-    xmlTest()
+    environTest()
