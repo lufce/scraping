@@ -4,6 +4,7 @@ import os
 from io import StringIO, BytesIO
 from datashape.dispatch import namespace
 import re
+from boto.kinesis.exceptions import InvalidArgumentException
 
 def webTest():
     req = webs.get("a")
@@ -42,10 +43,13 @@ def xmlTest():
 
 def getRatingFromHotelHTML():
     #設計を考えて
+    
+    
     hotel = open('my1.html', 'r')
     
     line = hotel.readline()
     
+    #クチコミ表の区画を見つける
     while line:
         if re.match(r".*kuchikomi_spec_body_wrap.*", line):
             print(line)
@@ -53,15 +57,25 @@ def getRatingFromHotelHTML():
             break
         line = hotel.readline()
 
+    #クチコミの値を探す
+    count = 0
     while line:
-        if re.match(r".*jlnpc-td05.*>(.+)</td>", line):
-            m = re.match(r".*>(.+)</td>",line)
-            print(line, end="")
-            num = m.group(1)
-            print(num.isnumeric())
-            num2 = float(num)
-            print(num2)
-            print(type(num2))
+        if re.match(r".*jlnpc-td05.*>.+</td>", line):
+            #見つけたのでカウントを増やす
+            count = count + 1
+            
+            #カウントが想定の範囲内かどうか調べて処理
+            if count <= 6:
+                m = re.match(r".*>(.+)</td>",line)
+                print(line, end="")
+                num = m.group(1)
+                print(num.isnumeric())
+                num2 = float(num)
+                print(num2)
+                print(type(num2))
+            else:
+                #カウントが想定の範囲外
+                break
             
         line = hotel.readline()
     
@@ -83,6 +97,27 @@ def test():
         
     print('end')
     
+def initResultsList(hotel_number):
+    #引数はint型
+    #入力されたホテル数を受け取って結果リストを初期化する。
+    #ホテルの数より１つ多く行を作って、一行目は項目名行にする。
+    
+    results = [[0 for col in range(9)] for row in range(hotel_number + 1)]
+
+    results[0][0] = 'input hotel name'
+    results[0][1] = 'found hotel name'
+    results[0][2] = 'Hotel Detail URL'
+    results[0][3] = 'クチコミ総合'
+    results[0][4] = 'クチコミ部屋'
+    results[0][5] = 'クチコミ朝食'
+    results[0][6] = 'クチコミ夕食'
+    results[0][7] = 'クチコミサービス'
+    results[0][8] = 'クチコミ清潔感'
+    
+    return results
+    
+    
 if __name__ == '__main__':
-    test()
+    results = initResultsList(1)
+        
 #     getRatingFromHotelHTML()
