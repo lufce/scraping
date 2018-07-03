@@ -3,6 +3,7 @@ from lxml import etree
 import os
 from io import StringIO, BytesIO
 from datashape.dispatch import namespace
+import re
 
 def webTest():
     req = webs.get("a")
@@ -39,8 +40,49 @@ def xmlTest():
             output.close()
             num = num+1
 
-def getRatingFromHotelDetailURL():
+def getRatingFromHotelHTML():
     #設計を考えて
+    hotel = open('my1.html', 'r')
+    
+    line = hotel.readline()
+    
+    while line:
+        if re.match(r".*kuchikomi_spec_body_wrap.*", line):
+            print(line)
+            line = hotel.readline()
+            break
+        line = hotel.readline()
 
+    while line:
+        if re.match(r".*jlnpc-td05.*>(.+)</td>", line):
+            m = re.match(r".*>(.+)</td>",line)
+            print(line, end="")
+            num = m.group(1)
+            print(num.isnumeric())
+            num2 = float(num)
+            print(num2)
+            print(type(num2))
+            
+        line = hotel.readline()
+    
+def test():
+    s1 = "-"
+    s2 = "3.2"
+    
+    try:
+        float(s1)
+        
+    except ValueError:
+        print('f1 is error')
+        
+    try:
+        float(s2)
+    
+    except ValueError:
+        print('f2 is error')
+        
+    print('end')
+    
 if __name__ == '__main__':
-    environTest()
+    test()
+#     getRatingFromHotelHTML()
